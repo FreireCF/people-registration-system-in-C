@@ -33,6 +33,7 @@
 ## Technologies Used
 <img align="center" src="https://img.shields.io/badge/C-00599C?style=for-the-badge&logo=c&logoColor=white" alt="C Language Badge"/>  <img align="center" src="https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white" alt="CPP logo"/>   <img align="center" src="https://img.shields.io/badge/Visual_Studio_Code-0078D4?style=for-the-badge&logo=visual%20studio%20code&logoColor=white" alt="VS Code logo"/>
 <br/> 
+<br/>
 
 ## Possible Future Improvements
 #### Save and load recors from a file to ensure data persistence
