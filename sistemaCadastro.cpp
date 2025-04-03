@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 typedef struct {
     int day, month, year;
@@ -27,21 +28,24 @@ void addPerson(Person *people, int *position) {
   (*position)++;
 }
 
-void showPerson(Person *person) {
+void showPerson(Person *person, int current_year) {
     if (person == NULL) {
         printf("\nInvalid person data.");
     } else {
-    printf("\nName: %s\n", person->name);
-    printf("\nBirth day: %d/%d/%d\n", person->birth.day, person->birth.month, person->birth.year);
-    printf("\nSex: %c\n", person->sex);
-    printf("\nCPF: %s\n", person->cpf);
+        int current_age = current_year - person->birth.year;//feature added
+    
+        printf("\nName: %s\n", person->name);
+        printf("\nBirth day: %d/%d/%d\n", person->birth.day, person->birth.month, person->birth.year);
+        printf("\nIdade Atual: %d", current_age);// feature added
+        printf("\nSex: %c\n", person->sex);
+        printf("\nCPF: %s\n", person->cpf);
     }
 }
 
-int searchPerson(char *searchedCpf, Person *people, int nascidos) {
+int searchPerson(char *searchedCpf, Person *people, int nascidos, int current_year) {
     for (int i = 0; i < nascidos; i++) {
         if (strcmp(searchedCpf, people[i].cpf) == 0) {
-            showPerson(&people[i]);
+            showPerson(&people[i], current_year);
             return i; //returns the position in array of the person being searched for
         }
     }
@@ -49,14 +53,14 @@ int searchPerson(char *searchedCpf, Person *people, int nascidos) {
     return -1;
 }
 
-void searchByDate(Person *people, int born, int day, int month, int year) {
+void searchByDate(Person *people, int born, int day, int month, int year, int current_year) {
     int searchDate = year * 365 + month * 30 + day; //“transform” the date into days to make the search easier
     int found = 0;
 
     for (int i = 0; i < born; i++) {
         int birth = people[i].birth.year* 365 + people[i].birth.month * 30 + people[i].birth.day;
         if (searchDate == birth) {
-            showPerson(&people[i]);
+            showPerson(&people[i], current_year);
             found++;
         }
     }
@@ -65,7 +69,9 @@ void searchByDate(Person *people, int born, int day, int month, int year) {
     }
 }
 
-void searchBetweenDates(Person *people, int born, int day1, int month1, int year1, int day2, int month2, int year2) {
+void searchBetweenDates(Person *people, int born, int day1, int month1, int year1, int day2, int month2, int year2,
+    int current_year) {
+
     int oldDate = year1 * 365 + month1 * 30 + day1; 
     int recentDate = year2 * 365 + month2 * 30 + day2;
 
@@ -75,7 +81,7 @@ void searchBetweenDates(Person *people, int born, int day1, int month1, int year
         int birth = people[i].birth.year * 365 + people[i].birth.month * 30 + people[i].birth.day;
 
         if (oldDate <= birth && birth <= recentDate) {
-            showPerson(&people[i]);
+            showPerson(&people[i], current_year);
             amount++;
             found++;
         }
@@ -201,7 +207,15 @@ int menu() {
 
 int main() {
     int option = -1, amount = 0;
-    char editCpf[12];
+    //char editCpf[12];
+
+    // Obtem o tempo atual
+    time_t current_time;
+    time(&current_time);
+
+    // Estrutura de tempo local
+    struct tm *local_time = localtime(&current_time);
+    int current_year = local_time->tm_year + 1900;// extrai o numero de anos desde 1900 e soma mais 1900
 
    Person people[10000];
 
@@ -217,14 +231,14 @@ int main() {
                 char searchedCpf[12];
                 printf("\nEnter the CPF for search (only numbers): ");
                 scanf("%s", searchedCpf);
-                searchPerson(searchedCpf, people, amount);
+                searchPerson(searchedCpf, people, amount, current_year);
                 break;
             
             case 3: 
                 int day, month, year;
                 printf("\nEnter the date for search (dd/mm/yyyy): ");
                 scanf("%d/%d/%d", &day, &month, &year);
-                searchByDate(people, amount, day, month, year);
+                searchByDate(people, amount, day, month, year, current_year);
                 break;
 
             case 4: 
@@ -235,7 +249,8 @@ int main() {
                 printf("\nEnter the younger date for seach (dd/mm/yyyy): ");
                 scanf("%d/%d/%d", &youngerDay, &youngerMonth, &youngerYear);
 
-                searchBetweenDates(people, amount, oldDay, oldMonth, oldYear, youngerDay, youngerMonth, youngerYear);
+                searchBetweenDates(people, amount, oldDay, oldMonth, oldYear, youngerDay, 
+                youngerMonth, youngerYear, current_year);
                 break;
 
             case 5:
